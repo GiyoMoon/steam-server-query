@@ -10,9 +10,12 @@ export enum REGIONS {
   'ALL' = 0xFF
 };
 
-export interface Filters {
-  nor?: Filters;
-  nand?: Filters;
+export interface Filter extends BasicFilter {
+  nor?: BasicFilter;
+  nand?: BasicFilter;
+}
+
+interface BasicFilter {
   dedicated?: 1;
   secure?: 1;
   gamedir?: string;
