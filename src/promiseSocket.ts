@@ -13,16 +13,24 @@ export class PromiseSocket {
         if (err) return reject(typeof err == 'string' ? new Error(err) : err);
 
         const messageListener = (buffer: any) => {
+          this._socket.removeListener('message', messageListener);
+          this._socket.removeListener('error', errorListener);
           clearTimeout(timeout);
           return resolve(buffer);
         };
 
+        const errorListener = (err: Error) => {
+          reject(err);
+        };
+
         const timeout = setTimeout(() => {
           this._socket.removeListener('message', messageListener);
+          this._socket.removeListener('error', errorListener);
+          reject('Timeout reached. Possible reasons: - Timeout to short; - You are being rate limited; - Wrong master server host configured;');
         }, this._timeout);
 
         this._socket.on('message', messageListener);
-        this._socket.on('error', (err) => console.error(err));
+        this._socket.on('error', errorListener);
       });
     });
   }

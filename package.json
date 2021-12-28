@@ -1,6 +1,6 @@
 {
   "name": "steam-server-query",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Package which implements the Steam master and game server protocols",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -8,8 +8,7 @@
     "lib"
   ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc && node ./lib/index.js"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",

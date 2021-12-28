@@ -11,26 +11,26 @@ export enum REGIONS {
 };
 
 export interface Filters {
-  nor?: string;
-  nand?: string;
-  dedicated?: boolean;
-  secure?: boolean;
+  nor?: Filters;
+  nand?: Filters;
+  dedicated?: 1;
+  secure?: 1;
   gamedir?: string;
   map?: string;
-  linux?: boolean;
-  password?: boolean;
-  empty?: boolean;
-  full?: boolean;
-  proxy?: boolean;
+  linux?: 1;
+  password?: 0;
+  empty?: 1;
+  full?: 1;
+  proxy?: 1;
   appid?: number;
   napp?: number;
-  noplayers?: boolean;
-  white?: boolean;
+  noplayers?: 1;
+  white?: 1;
   gametype?: string[];
   gamedata?: string[];
   gamedataor?: string[];
   name_match?: string;
   version_match?: string;
-  collapse_addr_hash?: boolean;
+  collapse_addr_hash?: 1;
   gameaddr?: string;
 }

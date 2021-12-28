@@ -4,16 +4,16 @@ Package which implements the Steam master and game server protocols and is worki
 ## Important
 This package is currently in development. The Steam master server protocol is already implemented and the game server protocol will follow.
 
-It also lacks error handling so be aware!😱
-
-## Usage
+## Examples
 ### Master Server Protocol
-To retrieve all servers from the game CS:GO:
+To retrieve all servers from the game CS:GO with players on it:
 ```javascript
 import { queryMaster, REGIONS } from 'steam-server-query';
 
-queryMaster('hl2master.steampowered.com:27011', REGIONS.ALL, 1000, { appid: 730 }).then(servers => {
+queryMaster('hl2master.steampowered.com:27011', REGIONS.ALL, 1000, { empty: 1, appid: 730 }).then(servers => {
   console.log(servers);
+}).catch((err) => {
+  console.error(err);
 });
 ```
 Response (shortened):
@@ -25,3 +25,6 @@ Response (shortened):
   "77.204.120.73:27015",
 ]
 ```
+
+## Notes
+- The master servers are rate limited. Requests with large outputs (6000+ servers) will probably reach this limit and a timeout error will be thrown.

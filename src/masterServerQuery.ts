@@ -17,25 +17,37 @@ export async function queryMaster(masterServer: string, region: REGIONS, timeout
   const port = parseInt(splitMasterServer[1]);
 
   const masterServerQuery = new MasterServerQuery(host, port, region, filters, timeout);
-  const servers = await masterServerQuery.fetchServers();
-  return servers;
+  const hosts = await masterServerQuery.fetchServers();
+  return hosts;
 }
 
 class MasterServerQuery {
   private _seedId = ZERO_IP;
   private _promiseSocket: PromiseSocket;
+  private _hosts: string[] = [];
 
   constructor(private _host: string, private _port: number, private _region: REGIONS, private _filters: Filters = {}, timeout: number) {
     this._promiseSocket = new PromiseSocket(timeout);
   };
 
   public async fetchServers() {
-    const resultBuffer = await this._promiseSocket.send(this._buildPacket(), this._host, this._port);
-    const parsedIps = this._parseBuffer(resultBuffer);
-    if (parsedIps[parsedIps.length - 1] === ZERO_IP) {
-      parsedIps.pop();
-    }
-    return parsedIps;
+    do {
+      let resultBuffer: Buffer;
+      try {
+        resultBuffer = await this._promiseSocket.send(this._buildPacket(), this._host, this._port);
+        // catch promise rejections and throw error
+      } catch (err: any) {
+        throw new Error(err);
+      }
+
+      const parsedHosts = this._parseBuffer(resultBuffer);
+      this._seedId = parsedHosts[parsedHosts.length - 1];
+      this._hosts.push(...parsedHosts);
+    } while (this._seedId !== ZERO_IP);
+
+    // remove ZERO_IP from end of host list
+    this._hosts.pop();
+    return this._hosts;
   }
 
   private _buildPacket() {
@@ -71,7 +83,7 @@ class MasterServerQuery {
   }
 
   private _parseBuffer(buffer: Buffer) {
-    const ips: string[] = [];
+    const hosts: string[] = [];
     if (buffer.compare(RESPONSE_START, 0, 6, 0, 6) === 0) {
       buffer = buffer.slice(6);
     }
@@ -80,10 +92,10 @@ class MasterServerQuery {
     while (i < buffer.length) {
       const ip = this._numberToIp(buffer.readInt32BE(i));
       const port = buffer[i + 4] << 8 | buffer[i + 5];
-      ips.push(`${ip}:${port}`);
+      hosts.push(`${ip}:${port}`);
       i += 6;
     }
-    return ips;
+    return hosts;
   }
 
   private _numberToIp(number: number) {
