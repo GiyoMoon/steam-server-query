@@ -20,3 +20,15 @@ export interface InfoResponse {
   keywords?: string;
   gameId?: BigInt;
 }
+
+export interface PlayerResponse {
+  playerCount: number;
+  players: Player[];
+}
+
+export interface Player {
+  index: number;
+  name: string;
+  score: number;
+  duration: number;
+}

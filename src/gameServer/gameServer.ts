@@ -1,9 +1,9 @@
 import { PromiseSocket } from '../promiseSocket';
-import { InfoResponse } from './gameServerTypes';
+import { InfoResponse, Player, PlayerResponse } from './gameServerTypes';
 
 const CHALLENGE_START = Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x41]);
 
-export async function queryGameServerInfo(gameServer: string, timeout = 1000): Promise<any> {
+export async function queryGameServerInfo(gameServer: string, timeout = 1000): Promise<InfoResponse> {
   const splitGameServer = gameServer.split(':');
   const host = splitGameServer[0];
   const port = parseInt(splitGameServer[1]);
@@ -13,8 +13,14 @@ export async function queryGameServerInfo(gameServer: string, timeout = 1000): P
   return result;
 }
 
-export function queryGameServerPlayer() {
-  // TODO
+export async function queryGameServerPlayer(gameServer: string, timeout = 1000): Promise<PlayerResponse> {
+  const splitGameServer = gameServer.split(':');
+  const host = splitGameServer[0];
+  const port = parseInt(splitGameServer[1]);
+
+  const gameServerQuery = new GameServerQuery(host, port, timeout);
+  const result = await gameServerQuery.player();
+  return result;
 }
 
 export function queryGameServerRules() {
@@ -28,10 +34,10 @@ class GameServerQuery {
     this._promiseSocket = new PromiseSocket(timeout);
   };
 
-  public async info() {
+  public async info(): Promise<InfoResponse> {
     let resultBuffer: Buffer;
     try {
-      resultBuffer = await this._promiseSocket.send(this._buildPacket(), this._host, this._port);
+      resultBuffer = await this._promiseSocket.send(this._buildInfoPacket(), this._host, this._port);
     } catch (err: any) {
       throw new Error(err);
     }
@@ -41,16 +47,37 @@ class GameServerQuery {
       resultBuffer = resultBuffer.slice(5);
       const challenge = resultBuffer;
       try {
-        resultBuffer = await this._promiseSocket.send(this._buildPacket(challenge), this._host, this._port);
+        resultBuffer = await this._promiseSocket.send(this._buildInfoPacket(challenge), this._host, this._port);
       } catch (err: any) {
         throw new Error(err);
       }
     }
     const parsedInfoBuffer = this._parseInfoBuffer(resultBuffer);
+    return parsedInfoBuffer as InfoResponse;
+  }
+
+  public async player(): Promise<PlayerResponse> {
+    let challengeResultBuffer: Buffer;
+    try {
+      challengeResultBuffer = await this._promiseSocket.send(this._buildPlayerPacket(), this._host, this._port);
+    } catch (err: any) {
+      throw new Error(err);
+    }
+
+    const challenge = challengeResultBuffer.slice(5);
+
+    let resultBuffer: Buffer;
+    try {
+      resultBuffer = await this._promiseSocket.send(this._buildPlayerPacket(challenge), this._host, this._port);
+    } catch (err: any) {
+      throw new Error(err);
+    }
+
+    const parsedInfoBuffer = this._parsePlayerBuffer(resultBuffer);
     return parsedInfoBuffer;
   }
 
-  private _buildPacket(challenge?: Buffer) {
+  private _buildInfoPacket(challenge?: Buffer) {
     let packet = Buffer.concat([
       Buffer.from([0xFF, 0xFF, 0xFF, 0xFF]),
       Buffer.from([0x54]),
@@ -69,7 +96,26 @@ class GameServerQuery {
     return packet;
   }
 
-  private _parseInfoBuffer(buffer: Buffer) {
+  private _buildPlayerPacket(challenge?: Buffer) {
+    let packet = Buffer.concat([
+      Buffer.from([0xFF, 0xFF, 0xFF, 0xFF]),
+      Buffer.from([0x55])
+    ]);
+    if (challenge) {
+      packet = Buffer.concat([
+        packet,
+        challenge
+      ]);
+    } else {
+      packet = Buffer.concat([
+        packet,
+        Buffer.from([0xFF, 0xFF, 0xFF, 0xFF])
+      ]);
+    }
+    return packet;
+  }
+
+  private _parseInfoBuffer(buffer: Buffer): InfoResponse {
     const infoResponse: Partial<InfoResponse> = {};
     buffer = buffer.slice(5);
     [infoResponse.protocol, buffer] = this._readUInt8(buffer);
@@ -115,7 +161,22 @@ class GameServerQuery {
       }
     }
 
-    return infoResponse;
+    return infoResponse as InfoResponse;
+  }
+
+  private _parsePlayerBuffer(buffer: Buffer): PlayerResponse {
+    const playerResponse: Partial<PlayerResponse> = {};
+    buffer = buffer.slice(5);
+    [playerResponse.playerCount, buffer] = this._readUInt8(buffer);
+
+    playerResponse.players = [];
+    for (let i = 0; i < playerResponse.playerCount; i++) {
+      let player: Player;
+      [player, buffer] = this._readPlayer(buffer);
+      playerResponse.players.push(player);
+    }
+
+    return playerResponse as PlayerResponse;
   }
 
   private _readString(buffer: Buffer): [string, Buffer] {
@@ -131,5 +192,17 @@ class GameServerQuery {
 
   private _readInt16LE(buffer: Buffer): [number, Buffer] {
     return [buffer.readInt16LE(), buffer.slice(2)];
+  }
+
+  private _readPlayer(buffer: Buffer): [Player, Buffer] {
+    let player: Partial<Player> = {};
+    [player.index, buffer] = this._readUInt8(buffer);
+    [player.name, buffer] = this._readString(buffer);
+    player.score = buffer.readInt32LE();
+    buffer = buffer.slice(4);
+    player.duration = buffer.readFloatLE();
+    buffer = buffer.slice(4);
+
+    return [player as Player, buffer];
   }
 }
