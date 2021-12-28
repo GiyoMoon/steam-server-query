@@ -1,0 +1,33 @@
+{
+  "name": "steam-server-query",
+  "version": "0.1.0",
+  "description": "Package which implements the Steam master and game server protocols",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc && node ./lib/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GiyoMoon/steam-server-query.git"
+  },
+  "keywords": [
+    "steam",
+    "master server query",
+    "game server query"
+  ],
+  "author": "GiyoMoon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GiyoMoon/steam-server-query/issues"
+  },
+  "homepage": "https://github.com/GiyoMoon/steam-server-query#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.5",
+    "typescript": "^4.5.4"
+  }
+}
