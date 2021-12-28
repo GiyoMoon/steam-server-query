@@ -1,8 +1,14 @@
 import { PromiseSocket } from '../promiseSocket';
 import { InfoResponse, Player, PlayerResponse, Rule, RulesResponse } from './gameServerTypes';
 
-const CHALLENGE_START = Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x41]);
-
+/**
+ * Send a A2S_INFO request to a game server. Retrieves information like its name, the current map, the number of players and so on.
+ * 
+ * Read more: https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO
+ * @param gameServer Host and port of the game server to call.
+ * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
+ * @returns A promise including an object of the type `InfoResponse`
+ */
 export async function queryGameServerInfo(gameServer: string, timeout = 1000): Promise<InfoResponse> {
   const splitGameServer = gameServer.split(':');
   const host = splitGameServer[0];
@@ -13,6 +19,14 @@ export async function queryGameServerInfo(gameServer: string, timeout = 1000): P
   return result;
 }
 
+/**
+ * Send a A2S_PLAYER request to a game server. Retrieves the current playercount and for every player their name, score and duration.
+ * 
+ * Read more: https://developer.valvesoftware.com/wiki/Server_queries#A2S_PLAYER
+ * @param gameServer Host and port of the game server to call.
+ * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
+ * @returns A promise including an object of the type `PlayerResponse`
+ */
 export async function queryGameServerPlayer(gameServer: string, timeout = 1000): Promise<PlayerResponse> {
   const splitGameServer = gameServer.split(':');
   const host = splitGameServer[0];
@@ -23,6 +37,14 @@ export async function queryGameServerPlayer(gameServer: string, timeout = 1000):
   return result;
 }
 
+/**
+ * Send a A2S_RULES request to a game server. Retrieves the rule count and for every rule its name and value.
+ * 
+ * Read more: https://developer.valvesoftware.com/wiki/Server_queries#A2S_RULES
+ * @param gameServer Host and port of the game server to call.
+ * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
+ * @returns A promise including an object of the type `RulesResponse`
+ */
 export async function queryGameServerRules(gameServer: string, timeout = 1000): Promise<RulesResponse> {
   const splitGameServer = gameServer.split(':');
   const host = splitGameServer[0];
