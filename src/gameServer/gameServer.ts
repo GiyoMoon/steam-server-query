@@ -1,5 +1,5 @@
 import { PromiseSocket } from '../promiseSocket';
-import { InfoResponse, Player, PlayerResponse } from './gameServerTypes';
+import { InfoResponse, Player, PlayerResponse, Rule, RulesResponse } from './gameServerTypes';
 
 const CHALLENGE_START = Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x41]);
 
@@ -23,8 +23,14 @@ export async function queryGameServerPlayer(gameServer: string, timeout = 1000):
   return result;
 }
 
-export function queryGameServerRules() {
-  // TODO
+export async function queryGameServerRules(gameServer: string, timeout = 1000): Promise<RulesResponse> {
+  const splitGameServer = gameServer.split(':');
+  const host = splitGameServer[0];
+  const port = parseInt(splitGameServer[1]);
+
+  const gameServerQuery = new GameServerQuery(host, port, timeout);
+  const result = await gameServerQuery.rules();
+  return result;
 }
 
 class GameServerQuery {
@@ -42,16 +48,6 @@ class GameServerQuery {
       throw new Error(err);
     }
 
-    // If the server replied with a challenge, grab challenge number and send request again
-    if (resultBuffer.compare(CHALLENGE_START, 0, 5, 0, 5) === 0) {
-      resultBuffer = resultBuffer.slice(5);
-      const challenge = resultBuffer;
-      try {
-        resultBuffer = await this._promiseSocket.send(this._buildInfoPacket(challenge), this._host, this._port);
-      } catch (err: any) {
-        throw new Error(err);
-      }
-    }
     const parsedInfoBuffer = this._parseInfoBuffer(resultBuffer);
     return parsedInfoBuffer as InfoResponse;
   }
@@ -59,7 +55,7 @@ class GameServerQuery {
   public async player(): Promise<PlayerResponse> {
     let challengeResultBuffer: Buffer;
     try {
-      challengeResultBuffer = await this._promiseSocket.send(this._buildPlayerPacket(), this._host, this._port);
+      challengeResultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x55])), this._host, this._port);
     } catch (err: any) {
       throw new Error(err);
     }
@@ -68,13 +64,34 @@ class GameServerQuery {
 
     let resultBuffer: Buffer;
     try {
-      resultBuffer = await this._promiseSocket.send(this._buildPlayerPacket(challenge), this._host, this._port);
+      resultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x55]), challenge), this._host, this._port);
     } catch (err: any) {
       throw new Error(err);
     }
 
-    const parsedInfoBuffer = this._parsePlayerBuffer(resultBuffer);
-    return parsedInfoBuffer;
+    const parsedPlayerBuffer = this._parsePlayerBuffer(resultBuffer);
+    return parsedPlayerBuffer;
+  }
+
+  public async rules(): Promise<RulesResponse> {
+    let challengeResultBuffer: Buffer;
+    try {
+      challengeResultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x56])), this._host, this._port);
+    } catch (err: any) {
+      throw new Error(err);
+    }
+
+    const challenge = challengeResultBuffer.slice(5);
+
+    let resultBuffer: Buffer;
+    try {
+      resultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x56]), challenge), this._host, this._port);
+    } catch (err: any) {
+      throw new Error(err);
+    }
+
+    const parsedRulesBuffer = this._parseRulesBuffer(resultBuffer);
+    return parsedRulesBuffer;
   }
 
   private _buildInfoPacket(challenge?: Buffer) {
@@ -96,10 +113,10 @@ class GameServerQuery {
     return packet;
   }
 
-  private _buildPlayerPacket(challenge?: Buffer) {
+  private _buildPacket(header: Buffer, challenge?: Buffer) {
     let packet = Buffer.concat([
       Buffer.from([0xFF, 0xFF, 0xFF, 0xFF]),
-      Buffer.from([0x55])
+      header
     ]);
     if (challenge) {
       packet = Buffer.concat([
@@ -179,6 +196,21 @@ class GameServerQuery {
     return playerResponse as PlayerResponse;
   }
 
+  private _parseRulesBuffer(buffer: Buffer): RulesResponse {
+    const rulesResponse: Partial<RulesResponse> = {};
+    buffer = buffer.slice(5);
+    [rulesResponse.ruleCount, buffer] = this._readInt16LE(buffer);
+
+    rulesResponse.rules = [];
+    for (let i = 0; i < rulesResponse.ruleCount; i++) {
+      let rule: Rule;
+      [rule, buffer] = this._readRule(buffer);
+      rulesResponse.rules.push(rule);
+    }
+
+    return rulesResponse as RulesResponse;
+  }
+
   private _readString(buffer: Buffer): [string, Buffer] {
     const endOfName = buffer.indexOf(0x00);
     const stringBuffer = buffer.subarray(0, endOfName);
@@ -204,5 +236,13 @@ class GameServerQuery {
     buffer = buffer.slice(4);
 
     return [player as Player, buffer];
+  }
+
+  private _readRule(buffer: Buffer): [Rule, Buffer] {
+    let rule: Partial<Rule> = {};
+    [rule.name, buffer] = this._readString(buffer);
+    [rule.value, buffer] = this._readString(buffer);
+
+    return [rule as Rule, buffer];
   }
 }

@@ -32,3 +32,13 @@ export interface Player {
   score: number;
   duration: number;
 }
+
+export interface RulesResponse {
+  ruleCount: number;
+  rules: Rule[];
+}
+
+export interface Rule {
+  name: string;
+  value: string;
+}
