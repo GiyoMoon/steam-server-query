@@ -1,5 +1,5 @@
-import { PromiseSocket } from './promiseSocket';
-import { REGIONS, Filter } from './types';
+import { PromiseSocket } from '../promiseSocket';
+import { REGIONS, Filter } from './masterServerTypes';
 
 const ZERO_IP = '0.0.0.0:0';
 const RESPONSE_START = Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x66, 0x0A]);
@@ -11,7 +11,7 @@ const RESPONSE_START = Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x66, 0x0A]);
  * @param filters Optional. Object which contains filters to be sent with the query. Default is { }. Read more here: https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol#Filter
  * @param timeout Optional. Time in ms after the call should fail. Default is 1 second.
  */
-export async function queryMaster(masterServer: string, region: REGIONS, filters: Filter = {}, timeout = 1000): Promise<string[]> {
+export async function queryMasterServer(masterServer: string, region: REGIONS, filters: Filter = {}, timeout = 1000): Promise<string[]> {
   const splitMasterServer = masterServer.split(':');
   const host = splitMasterServer[0];
   const port = parseInt(splitMasterServer[1]);
