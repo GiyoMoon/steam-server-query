@@ -4,7 +4,7 @@ import { InfoResponse, Player, PlayerResponse, Rule, RulesResponse } from './gam
 /**
  * Send a A2S_INFO request to a game server. Retrieves information like its name, the current map, the number of players and so on.
  * 
- * Read more: https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO
+ * Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO).
  * @param gameServer Host and port of the game server to call.
  * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
  * @returns A promise including an object of the type `InfoResponse`
@@ -22,7 +22,7 @@ export async function queryGameServerInfo(gameServer: string, timeout = 1000): P
 /**
  * Send a A2S_PLAYER request to a game server. Retrieves the current playercount and for every player their name, score and duration.
  * 
- * Read more: https://developer.valvesoftware.com/wiki/Server_queries#A2S_PLAYER
+ * Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_PLAYER).
  * @param gameServer Host and port of the game server to call.
  * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
  * @returns A promise including an object of the type `PlayerResponse`
@@ -40,7 +40,7 @@ export async function queryGameServerPlayer(gameServer: string, timeout = 1000):
 /**
  * Send a A2S_RULES request to a game server. Retrieves the rule count and for every rule its name and value.
  * 
- * Read more: https://developer.valvesoftware.com/wiki/Server_queries#A2S_RULES
+ * Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_RULES).
  * @param gameServer Host and port of the game server to call.
  * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
  * @returns A promise including an object of the type `RulesResponse`

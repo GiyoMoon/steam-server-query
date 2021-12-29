@@ -26,7 +26,7 @@ export class PromiseSocket {
         const timeout = setTimeout(() => {
           this._socket.removeListener('message', messageListener);
           this._socket.removeListener('error', errorListener);
-          reject('Timeout reached. Possible reasons: - Timeout to short; - You are being rate limited; - Wrong master server host configured;');
+          reject('Timeout reached. Possible reasons: You are being rate limited; Timeout too short; Wrong server host configured;');
         }, this._timeout);
 
         this._socket.on('message', messageListener);

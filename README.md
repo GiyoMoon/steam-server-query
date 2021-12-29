@@ -1,40 +1,50 @@
 # Steam Server Query
-Package which implements the Steam master and game server protocols and is working with promises.
+[![npm version](https://img.shields.io/npm/v/steam-server-query.svg)](https://npmjs.com/package/steam-server-query)
+[![npm downloads](https://img.shields.io/npm/dm/steam-server-query.svg)](https://npmjs.com/package/steam-server-query)
+[![license](https://img.shields.io/npm/l/steam-server-query.svg)](https://github.com/GiyoMoon/steam-server-query/blob/master/LICENSE)
 
-## Important
-This package is currently in development. The Steam master server protocol is already implemented and the game server protocol will follow.
+Package which implements the [Master Server Query Protocol](https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol) and [Game Server Queries](https://developer.valvesoftware.com/wiki/Server_queries). It is working with promises.
+
+## Install
+```bash
+npm install steam-server-query
+```
 
 ## API
 ### Master Server Query
-#### `queryMaster(masterServer: string, region: REGIONS, filter?: Filter, timeout?: number): Promise<string[]>`
-Function to query a master server with different queries.
-- `masterServer`: Host and port of the master server to call. Example: `hl2master.steampowered.com:27011`
+```javascript
+queryMasterServer(masterServer: string, region: REGIONS, filter?: Filter, timeout?: number): Promise<string[]>
+```
+Fetch a Steam master server to retrieve a list of game server hosts.
+- `masterServer`: Host and port of the master server to call.
 - `region`: The region of the world where you wish to find servers in. Use `REGIONS.ALL` for all regions.
 - `filter`: Optional. Object which contains filters to be sent with the query. Default is { }.
 - `timeout`: Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
 - Returns: A promise including an array of game server hosts.
 ### Game Server Query
-#### `queryGameServerInfo(gameServer: string, timeout?: number): Promise<InfoResponse>`
-Send a A2S_INFO request to a game server. Retrieves information like its name, the current map, the number of players and so on.
+```javascript
+queryGameServerInfo(gameServer: string, timeout?: number): Promise<InfoResponse>
+```
+Send a A2S_INFO request to a game server. Retrieves information like its name, the current map, the number of players and so on. Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO).
 
-Read more: https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO
+---
+```javascript
+queryGameServerPlayer(gameServer: string, timeout?: number): Promise<PlayerResponse>
+```
+Send a A2S_PLAYER request to a game server. Retrieves the current playercount and for every player their name, score and duration. Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_PLAYER).
+
+---
+```javascript
+queryGameServerInfo(gameServer: string, timeout?: number): Promise<InfoResponse>
+```
+Send a A2S_RULES request to a game server. Retrieves the rule count and for every rule its name and value. Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_RULES).
+
+---
+Parameters for every Game Server Query function
 - `gameServer`: Host and port of the game server to call.
 - `timeout`: Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
-- Returns: A promise including an object of the type `InfoResponse`
-#### `queryGameServerPlayer(gameServer: string, timeout?: number): Promise<PlayerResponse>`
-Send a A2S_PLAYER request to a game server. Retrieves the current playercount and for every player their name, score and duration.
+- Returns: A promise including an object (Either type `InfoResponse`, `PlayerResponse` or `RulesResponse`)
 
-Read more: https://developer.valvesoftware.com/wiki/Server_queries#A2S_PLAYER
-- `gameServer`: Host and port of the game server to call.
-- `timeout`: Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
-- Returns: A promise including an object of the type `PlayerResponse`
-#### `queryGameServerRules(gameServer: string, timeout?: number): Promise<RulesResponse>`
-Send a A2S_RULES request to a game server. Retrieves the rule count and for every rule its name and value.
-
-Read more: https://developer.valvesoftware.com/wiki/Server_queries#A2S_RULES
-- `gameServer`: Host and port of the game server to call.
-- `timeout`: Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
-- Returns: A promise including an object of the type `RulesResponse`
 ## Types
 ### Master Server Query
 #### `REGIONS`
@@ -263,4 +273,7 @@ Response:
 
 ## Links
 - [Master Server Query Protocol](https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol)
-- [Game Server Query](https://developer.valvesoftware.com/wiki/Server_queries)
+- [Game Server Queries](https://developer.valvesoftware.com/wiki/Server_queries)
+
+## License
+This repository and the code inside it is licensed under the MIT License. Read [LICENSE](https://github.com/GiyoMoon/steam-server-query/blob/main/LICENSE) for more information.

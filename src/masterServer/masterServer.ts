@@ -5,12 +5,12 @@ const ZERO_IP = '0.0.0.0:0';
 const RESPONSE_START = Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x66, 0x0A]);
 
 /**
- * Fetch a Steam master server to retrieve a list of game server hosts
+ * Fetch a Steam master server to retrieve a list of game server hosts.
  * 
- * Read more: https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol
+ * Read more [here](https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol).
  * @param masterServer Host and port of the master server to call.
  * @param region The region of the world where you wish to find servers in. Use REGIONS.ALL for all regions.
- * @param filters Optional. Object which contains filters to be sent with the query. Default is { }. Read more here: https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol#Filter
+ * @param filters Optional. Object which contains filters to be sent with the query. Default is { }. Read more [here](https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol#Filter).
  * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
  * @returns A promise including an array of game server hosts.
  */

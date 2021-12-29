@@ -1,7 +1,7 @@
 {
   "name": "steam-server-query",
-  "version": "1.0.0",
-  "description": "Package which implements the Steam master and game server protocols",
+  "version": "1.0.1",
+  "description": "Package which implements the Master Server Query Protocol and Game Server Queries.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
