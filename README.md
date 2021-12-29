@@ -1,7 +1,7 @@
 # Steam Server Query
 [![npm version](https://img.shields.io/npm/v/steam-server-query.svg)](https://npmjs.com/package/steam-server-query)
 [![npm downloads](https://img.shields.io/npm/dm/steam-server-query.svg)](https://npmjs.com/package/steam-server-query)
-[![license](https://img.shields.io/npm/l/steam-server-query.svg)](https://github.com/GiyoMoon/steam-server-query/blob/master/LICENSE)
+[![license](https://img.shields.io/npm/l/steam-server-query.svg)](https://github.com/GiyoMoon/steam-server-query/blob/main/LICENSE)
 
 Package which implements the [Master Server Query Protocol](https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol) and [Game Server Queries](https://developer.valvesoftware.com/wiki/Server_queries). It is working with promises.
 
@@ -35,7 +35,7 @@ Send a A2S_PLAYER request to a game server. Retrieves the current playercount an
 
 ---
 ```javascript
-queryGameServerInfo(gameServer: string, timeout?: number): Promise<InfoResponse>
+queryGameServerRules(gameServer: string, timeout?: number): Promise<RulesResponse>
 ```
 Send a A2S_RULES request to a game server. Retrieves the rule count and for every rule its name and value. Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_RULES).
 
