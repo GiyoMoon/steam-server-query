@@ -70,6 +70,17 @@ class GameServerQuery {
       throw new Error(err);
     }
 
+    // If the server replied with a challenge, grab challenge number and send request again
+    if (resultBuffer.compare(Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x41]), 0, 5, 0, 5) === 0) {
+      resultBuffer = resultBuffer.slice(5);
+      const challenge = resultBuffer;
+      try {
+        resultBuffer = await this._promiseSocket.send(this._buildInfoPacket(challenge), this._host, this._port);
+      } catch (err: any) {
+        throw new Error(err);
+      }
+    }
+
     const parsedInfoBuffer = this._parseInfoBuffer(resultBuffer);
     return parsedInfoBuffer as InfoResponse;
   }
@@ -120,7 +131,8 @@ class GameServerQuery {
     let packet = Buffer.concat([
       Buffer.from([0xFF, 0xFF, 0xFF, 0xFF]),
       Buffer.from([0x54]),
-      Buffer.from('Source Engine Query', 'ascii')
+      Buffer.from('Source Engine Query', 'ascii'),
+      Buffer.from([0x00])
     ]);
     if (challenge) {
       packet = Buffer.concat([
@@ -128,10 +140,6 @@ class GameServerQuery {
         challenge
       ]);
     }
-    packet = Buffer.concat([
-      packet,
-      Buffer.from([0x00])
-    ]);
     return packet;
   }
 

@@ -68,9 +68,13 @@ class MasterServerQuery {
       // @ts-ignore
       let val = this._filters[key];
       str += '\\' + key + '\\';
-      str += (key === 'nor' || key === 'nand')
-        ? Object.keys(val).length + this._slashifyObject(val)
-        : val;
+      if (key === 'nor' || key === 'nand') {
+        str += Object.keys(val).length + this._slashifyObject(val);
+      } else if (Array.isArray(val)) {
+        str += val.join(',');
+      } else {
+        str += val;
+      }
     }
     str += '\x00';
     return str;
