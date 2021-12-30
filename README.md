@@ -3,7 +3,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/steam-server-query.svg)](https://npmjs.com/package/steam-server-query)
 [![license](https://img.shields.io/npm/l/steam-server-query.svg)](https://github.com/GiyoMoon/steam-server-query/blob/main/LICENSE)
 
-Package which implements the [Master Server Query Protocol](https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol) and [Game Server Queries](https://developer.valvesoftware.com/wiki/Server_queries). It is working with promises.
+Module which implements the [Master Server Query Protocol](https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol) and [Game Server Queries](https://developer.valvesoftware.com/wiki/Server_queries). It is working with promises.
 
 ## Install
 ```bash
@@ -23,26 +23,27 @@ Fetch a Steam master server to retrieve a list of game server hosts.
 - Returns: A promise including an array of game server hosts.
 ### Game Server Query
 ```javascript
-queryGameServerInfo(gameServer: string, timeout?: number): Promise<InfoResponse>
+queryGameServerInfo(gameServer: string, attempts?: number, timeout?: number | number[]): Promise<InfoResponse>
 ```
 Send a A2S_INFO request to a game server. Retrieves information like its name, the current map, the number of players and so on. Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO).
 
 ---
 ```javascript
-queryGameServerPlayer(gameServer: string, timeout?: number): Promise<PlayerResponse>
+queryGameServerPlayer(gameServer: string, attempts?: number, timeout?: number | number[]): Promise<PlayerResponse>
 ```
 Send a A2S_PLAYER request to a game server. Retrieves the current playercount and for every player their name, score and duration. Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_PLAYER).
 
 ---
 ```javascript
-queryGameServerRules(gameServer: string, timeout?: number): Promise<RulesResponse>
+queryGameServerRules(gameServer: string, attempts?: number, timeout?: number | number[]): Promise<RulesResponse>
 ```
 Send a A2S_RULES request to a game server. Retrieves the rule count and for every rule its name and value. Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_RULES).
 
 ---
 Parameters for every Game Server Query function
 - `gameServer`: Host and port of the game server to call.
-- `timeout`: Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
+- `attempts`: Optional. Number of call attempts to make. Default is 1 attempt.
+- `timeout`: Optional. Time in milliseconds after the socket request should fail. Default is 1000. Specify an array of timeouts if they should be different for every attempt. (Example for 3 attempts: `[1000, 1000, 2000]`)
 - Returns: A promise including an object (Either type `InfoResponse`, `PlayerResponse` or `RulesResponse`)
 
 ## Types

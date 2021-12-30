@@ -30,7 +30,7 @@ class MasterServerQuery {
   private _hosts: string[] = [];
 
   constructor(private _host: string, private _port: number, private _region: REGIONS, private _filters: Filter, timeout: number) {
-    this._promiseSocket = new PromiseSocket(timeout);
+    this._promiseSocket = new PromiseSocket(1, timeout);
   };
 
   public async fetchServers() {
