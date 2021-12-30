@@ -6,15 +6,16 @@ import { InfoResponse, Player, PlayerResponse, Rule, RulesResponse } from './gam
  * 
  * Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_INFO).
  * @param gameServer Host and port of the game server to call.
- * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
+ * @param attempts Optional. Number of call attempts to make. Default is 1 attempt.
+ * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1000. Specify an array of timeouts if they should be different for every attempt.
  * @returns A promise including an object of the type `InfoResponse`
  */
-export async function queryGameServerInfo(gameServer: string, timeout = 1000): Promise<InfoResponse> {
+export async function queryGameServerInfo(gameServer: string, attempts = 1, timeout: number | number[] = 1000): Promise<InfoResponse> {
   const splitGameServer = gameServer.split(':');
   const host = splitGameServer[0];
   const port = parseInt(splitGameServer[1]);
 
-  const gameServerQuery = new GameServerQuery(host, port, timeout);
+  const gameServerQuery = new GameServerQuery(host, port, attempts, timeout);
   const result = await gameServerQuery.info();
   return result;
 }
@@ -24,15 +25,16 @@ export async function queryGameServerInfo(gameServer: string, timeout = 1000): P
  * 
  * Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_PLAYER).
  * @param gameServer Host and port of the game server to call.
- * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
+ * @param attempts Optional. Number of call attempts to make. Default is 1 attempt.
+ * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1000. Specify an array of timeouts if they should be different for every attempt.
  * @returns A promise including an object of the type `PlayerResponse`
  */
-export async function queryGameServerPlayer(gameServer: string, timeout = 1000): Promise<PlayerResponse> {
+export async function queryGameServerPlayer(gameServer: string, attempts = 1, timeout: number | number[] = 1000): Promise<PlayerResponse> {
   const splitGameServer = gameServer.split(':');
   const host = splitGameServer[0];
   const port = parseInt(splitGameServer[1]);
 
-  const gameServerQuery = new GameServerQuery(host, port, timeout);
+  const gameServerQuery = new GameServerQuery(host, port, attempts, timeout);
   const result = await gameServerQuery.player();
   return result;
 }
@@ -42,15 +44,16 @@ export async function queryGameServerPlayer(gameServer: string, timeout = 1000):
  * 
  * Read more [here](https://developer.valvesoftware.com/wiki/Server_queries#A2S_RULES).
  * @param gameServer Host and port of the game server to call.
- * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
+ * @param attempts Optional. Number of call attempts to make. Default is 1 attempt.
+ * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1000. Specify an array of timeouts if they should be different for every attempt.
  * @returns A promise including an object of the type `RulesResponse`
  */
-export async function queryGameServerRules(gameServer: string, timeout = 1000): Promise<RulesResponse> {
+export async function queryGameServerRules(gameServer: string, attempts = 1, timeout: number | number[] = 1000): Promise<RulesResponse> {
   const splitGameServer = gameServer.split(':');
   const host = splitGameServer[0];
   const port = parseInt(splitGameServer[1]);
 
-  const gameServerQuery = new GameServerQuery(host, port, timeout);
+  const gameServerQuery = new GameServerQuery(host, port, attempts, timeout);
   const result = await gameServerQuery.rules();
   return result;
 }
@@ -58,8 +61,8 @@ export async function queryGameServerRules(gameServer: string, timeout = 1000): 
 class GameServerQuery {
   private _promiseSocket: PromiseSocket;
 
-  constructor(private _host: string, private _port: number, timeout: number) {
-    this._promiseSocket = new PromiseSocket(timeout);
+  constructor(private _host: string, private _port: number, attempts: number, timeout: number | number[]) {
+    this._promiseSocket = new PromiseSocket(attempts, timeout);
   };
 
   public async info(): Promise<InfoResponse> {
