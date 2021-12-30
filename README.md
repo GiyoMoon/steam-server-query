@@ -13,13 +13,14 @@ npm install steam-server-query
 ## API
 ### Master Server Query
 ```javascript
-queryMasterServer(masterServer: string, region: REGIONS, filter?: Filter, timeout?: number): Promise<string[]>
+queryMasterServer(masterServer: string, region: REGIONS, filter?: Filter, timeout?: number, maxHosts?: number): Promise<string[]>
 ```
 Fetch a Steam master server to retrieve a list of game server hosts.
 - `masterServer`: Host and port of the master server to call.
 - `region`: The region of the world where you wish to find servers in. Use `REGIONS.ALL` for all regions.
 - `filter`: Optional. Object which contains filters to be sent with the query. Default is { }.
 - `timeout`: Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
+- `maxHosts`: Optional. Return a limited amount of hosts. Stops calling the master server after this limit is reached. Can be used to prevent getting rate limited.
 - Returns: A promise including an array of game server hosts.
 ### Game Server Query
 ```javascript

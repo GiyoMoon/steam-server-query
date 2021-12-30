@@ -12,14 +12,15 @@ const RESPONSE_START = Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x66, 0x0A]);
  * @param region The region of the world where you wish to find servers in. Use REGIONS.ALL for all regions.
  * @param filters Optional. Object which contains filters to be sent with the query. Default is { }. Read more [here](https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol#Filter).
  * @param timeout Optional. Time in milliseconds after the socket request should fail. Default is 1 second.
+ * @param maxHosts Optional. Return a limited amount of hosts. Stops calling the master server after this limit is reached. Can be used to prevent getting rate limited.
  * @returns A promise including an array of game server hosts.
  */
-export async function queryMasterServer(masterServer: string, region: REGIONS, filters: Filter = {}, timeout = 1000): Promise<string[]> {
+export async function queryMasterServer(masterServer: string, region: REGIONS, filters: Filter = {}, timeout = 1000, maxHosts?: number): Promise<string[]> {
   const splitMasterServer = masterServer.split(':');
   const host = splitMasterServer[0];
   const port = parseInt(splitMasterServer[1]);
 
-  const masterServerQuery = new MasterServerQuery(host, port, region, filters, timeout);
+  const masterServerQuery = new MasterServerQuery(host, port, region, filters, timeout, maxHosts);
   const hosts = await masterServerQuery.fetchServers();
   return hosts;
 }
@@ -29,7 +30,7 @@ class MasterServerQuery {
   private _promiseSocket: PromiseSocket;
   private _hosts: string[] = [];
 
-  constructor(private _host: string, private _port: number, private _region: REGIONS, private _filters: Filter, timeout: number) {
+  constructor(private _host: string, private _port: number, private _region: REGIONS, private _filters: Filter, timeout: number, private _maxHosts?: number) {
     this._promiseSocket = new PromiseSocket(1, timeout);
   };
 
@@ -46,6 +47,14 @@ class MasterServerQuery {
       const parsedHosts = this._parseBuffer(resultBuffer);
       this._seedId = parsedHosts[parsedHosts.length - 1];
       this._hosts.push(...parsedHosts);
+
+      if (
+        this._maxHosts &&
+        this._hosts.length >= this._maxHosts &&
+        this._hosts[this._maxHosts - 1] !== ZERO_IP
+      ) {
+        return this._hosts.slice(0, this._maxHosts);
+      }
     } while (this._seedId !== ZERO_IP);
 
     // remove ZERO_IP from end of host list
