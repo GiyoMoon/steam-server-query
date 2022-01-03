@@ -84,6 +84,8 @@ class GameServerQuery {
       }
     }
 
+    this._promiseSocket.closeSocket();
+
     const parsedInfoBuffer = this._parseInfoBuffer(resultBuffer);
     return parsedInfoBuffer as InfoResponse;
   }
@@ -105,6 +107,8 @@ class GameServerQuery {
       throw new Error(err);
     }
 
+    this._promiseSocket.closeSocket();
+
     const parsedPlayerBuffer = this._parsePlayerBuffer(resultBuffer);
     return parsedPlayerBuffer;
   }
@@ -125,6 +129,8 @@ class GameServerQuery {
     } catch (err: any) {
       throw new Error(err);
     }
+
+    this._promiseSocket.closeSocket();
 
     const parsedRulesBuffer = this._parseRulesBuffer(resultBuffer);
     return parsedRulesBuffer;

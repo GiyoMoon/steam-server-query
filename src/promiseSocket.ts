@@ -35,6 +35,10 @@ export class PromiseSocket {
     });
   }
 
+  public closeSocket() {
+    this._socket.close();
+  }
+
   private _socketSend(buffer: Buffer, host: string, port: number, timeout: number): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       this._socket.send(buffer, port, host, (err) => {

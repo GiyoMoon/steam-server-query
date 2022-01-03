@@ -57,6 +57,8 @@ class MasterServerQuery {
       }
     } while (this._seedId !== ZERO_IP);
 
+    this._promiseSocket.closeSocket();
+
     // remove ZERO_IP from end of host list
     this._hosts.pop();
     return this._hosts;
