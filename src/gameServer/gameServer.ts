@@ -70,6 +70,7 @@ class GameServerQuery {
     try {
       resultBuffer = await this._promiseSocket.send(this._buildInfoPacket(), this._host, this._port);
     } catch (err: any) {
+      this._promiseSocket.closeSocket();
       throw new Error(err);
     }
 
@@ -80,6 +81,7 @@ class GameServerQuery {
       try {
         resultBuffer = await this._promiseSocket.send(this._buildInfoPacket(challenge), this._host, this._port);
       } catch (err: any) {
+        this._promiseSocket.closeSocket();
         throw new Error(err);
       }
     }
@@ -95,6 +97,7 @@ class GameServerQuery {
     try {
       challengeResultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x55])), this._host, this._port);
     } catch (err: any) {
+      this._promiseSocket.closeSocket();
       throw new Error(err);
     }
 
@@ -104,6 +107,7 @@ class GameServerQuery {
     try {
       resultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x55]), challenge), this._host, this._port);
     } catch (err: any) {
+      this._promiseSocket.closeSocket();
       throw new Error(err);
     }
 
@@ -118,6 +122,7 @@ class GameServerQuery {
     try {
       challengeResultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x56])), this._host, this._port);
     } catch (err: any) {
+      this._promiseSocket.closeSocket();
       throw new Error(err);
     }
 
@@ -127,6 +132,7 @@ class GameServerQuery {
     try {
       resultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x56]), challenge), this._host, this._port);
     } catch (err: any) {
+      this._promiseSocket.closeSocket();
       throw new Error(err);
     }
 

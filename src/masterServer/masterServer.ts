@@ -41,6 +41,7 @@ class MasterServerQuery {
         resultBuffer = await this._promiseSocket.send(this._buildPacket(), this._host, this._port);
         // catch promise rejections and throw error
       } catch (err: any) {
+        this._promiseSocket.closeSocket();
         throw new Error(err);
       }
 
@@ -53,6 +54,7 @@ class MasterServerQuery {
         this._hosts.length >= this._maxHosts &&
         this._hosts[this._maxHosts - 1] !== ZERO_IP
       ) {
+        this._promiseSocket.closeSocket();
         return this._hosts.slice(0, this._maxHosts);
       }
     } while (this._seedId !== ZERO_IP);
