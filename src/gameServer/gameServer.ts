@@ -75,7 +75,7 @@ class GameServerQuery {
     }
 
     // If the server replied with a challenge, grab challenge number and send request again
-    if (resultBuffer.compare(Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x41]), 0, 5, 0, 5) === 0) {
+    if (this._isChallengeResponse(resultBuffer)) {
       resultBuffer = resultBuffer.slice(5);
       const challenge = resultBuffer;
       try {
@@ -93,25 +93,39 @@ class GameServerQuery {
   }
 
   public async player(): Promise<PlayerResponse> {
-    let challengeResultBuffer: Buffer;
-    try {
-      challengeResultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x55])), this._host, this._port);
-    } catch (err: any) {
-      this._promiseSocket.closeSocket();
-      throw new Error(err);
-    }
-
-    const challenge = challengeResultBuffer.slice(5);
-
     let resultBuffer: Buffer;
-    try {
-      resultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x55]), challenge), this._host, this._port);
-    } catch (err: any) {
-      this._promiseSocket.closeSocket();
-      throw new Error(err);
-    }
+    let gotPlayerResponse = false;
+    let challengeTries = 0;
+
+    do {
+      let challengeResultBuffer: Buffer;
+      try {
+        challengeResultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x55])), this._host, this._port);
+      } catch (err: any) {
+        this._promiseSocket.closeSocket();
+        throw new Error(err);
+      }
+
+      const challenge = challengeResultBuffer.slice(5);
+      try {
+        resultBuffer = await this._promiseSocket.send(this._buildPacket(Buffer.from([0x55]), challenge), this._host, this._port);
+      } catch (err: any) {
+        this._promiseSocket.closeSocket();
+        throw new Error(err);
+      }
+
+      if (!this._isChallengeResponse(resultBuffer)) {
+        gotPlayerResponse = true;
+      }
+
+      challengeTries++;
+    } while (!gotPlayerResponse && challengeTries < 5);
 
     this._promiseSocket.closeSocket();
+
+    if (this._isChallengeResponse(resultBuffer)) {
+      throw new Error('Server kept sending challenge responses.');
+    }
 
     const parsedPlayerBuffer = this._parsePlayerBuffer(resultBuffer);
     return parsedPlayerBuffer;
@@ -175,6 +189,10 @@ class GameServerQuery {
       ]);
     }
     return packet;
+  }
+
+  private _isChallengeResponse(buffer: Buffer) {
+    return buffer.compare(Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0x41]), 0, 5, 0, 5) === 0;
   }
 
   private _parseInfoBuffer(buffer: Buffer): InfoResponse {
