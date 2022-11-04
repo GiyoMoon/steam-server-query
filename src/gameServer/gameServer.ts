@@ -196,8 +196,43 @@ class GameServerQuery {
   }
 
   private _parseInfoBuffer(buffer: Buffer): InfoResponse {
+    buffer = buffer.slice(4);
+    const header = buffer.toString('utf-8', 0, 1)
+    buffer = buffer.slice(1);
+    switch (header) {
+      case 'm': { // is a Goldsrc server
+        return this._parseGoldSrcServer(buffer);
+      }
+      default: { //  header = "I" Is a Source server
+        return this._parseSourceServer(buffer);
+      }
+    };
+  }
+
+  private _parseGoldSrcServer(buffer: Buffer): InfoResponse {
     const infoResponse: Partial<InfoResponse> = {};
-    buffer = buffer.slice(5);
+    [infoResponse.ip, buffer] = this._readString(buffer);
+    [infoResponse.map, buffer] = this._readString(buffer);
+    [infoResponse.name, buffer] = this._readString(buffer);
+    [infoResponse.folder, buffer] = this._readString(buffer);
+    [infoResponse.game, buffer] = this._readString(buffer);
+    [infoResponse.players, buffer] = this._readUInt8(buffer);
+    [infoResponse.maxPlayers, buffer] = this._readUInt8(buffer);
+    [infoResponse.protocol, buffer] = this._readUInt8(buffer);
+    infoResponse.serverType = buffer.subarray(0, 1).toString('utf-8');
+    buffer = buffer.slice(1);
+
+    infoResponse.environment = buffer.subarray(0, 1).toString('utf-8');
+    buffer = buffer.slice(1);
+    [infoResponse.visibility, buffer] = this._readUInt8(buffer);
+    [infoResponse.mod, buffer] = this._readUInt8(buffer);
+    [infoResponse.vac, buffer] = this._readUInt8(buffer);
+    [infoResponse.bots, buffer] = this._readUInt8(buffer);
+    return infoResponse as InfoResponse;
+  }
+
+  private _parseSourceServer(buffer: Buffer): InfoResponse {
+    const infoResponse: Partial<InfoResponse> = {};
     [infoResponse.protocol, buffer] = this._readUInt8(buffer);
     [infoResponse.name, buffer] = this._readString(buffer);
     [infoResponse.map, buffer] = this._readString(buffer);

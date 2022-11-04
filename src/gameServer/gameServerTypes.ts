@@ -1,4 +1,6 @@
 export interface InfoResponse {
+  ip?: string; // only for goldsrc
+  mod?: number; // only for goldsrc
   protocol: number;
   name: string;
   map: string;
