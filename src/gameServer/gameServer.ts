@@ -212,8 +212,8 @@ class GameServerQuery {
   private _parseGoldSrcServer(buffer: Buffer): InfoResponse {
     const infoResponse: Partial<InfoResponse> = {};
     [infoResponse.ip, buffer] = this._readString(buffer);
-    [infoResponse.map, buffer] = this._readString(buffer);
     [infoResponse.name, buffer] = this._readString(buffer);
+    [infoResponse.map, buffer] = this._readString(buffer);
     [infoResponse.folder, buffer] = this._readString(buffer);
     [infoResponse.game, buffer] = this._readString(buffer);
     [infoResponse.players, buffer] = this._readUInt8(buffer);
