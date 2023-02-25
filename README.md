@@ -1,13 +1,13 @@
 # Steam Server Query
-[![npm version](https://img.shields.io/npm/v/steam-server-query.svg)](https://npmjs.com/package/steam-server-query)
-[![npm downloads](https://img.shields.io/npm/dm/steam-server-query.svg)](https://npmjs.com/package/steam-server-query)
-[![license](https://img.shields.io/npm/l/steam-server-query.svg)](https://github.com/GiyoMoon/steam-server-query/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/steam-server-query-goldsrc-support.svg)](https://npmjs.com/package/steam-server-query-goldsrc-support)
+[![npm downloads](https://img.shields.io/npm/dm/steam-server-query-goldsrc-support.svg)](https://npmjs.com/package/steam-server-query-goldsrc-support)
+[![license](https://img.shields.io/npm/l/steam-server-query-goldsrc-support.svg)](https://github.com/LAxBANDA/steam-server-query-goldsrc-support/blob/main/LICENSE)
 
 Module which implements the [Master Server Query Protocol](https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol) and [Game Server Queries](https://developer.valvesoftware.com/wiki/Server_queries). It is working with promises.
 
 ## Install
 ```bash
-npm install steam-server-query
+npm install steam-server-query-goldsrc-support
 ```
 
 ## API
@@ -149,7 +149,7 @@ interface Rule {
 ### Master Server Protocol
 To retrieve all servers from the game [Witch It](https://store.steampowered.com/app/559650/Witch_It/) with players on it:
 ```javascript
-import { queryMasterServer, REGIONS } from 'steam-server-query';
+import { queryMasterServer, REGIONS } from 'steam-server-query-goldsrc-support';
 
 queryMasterServer('hl2master.steampowered.com:27011', REGIONS.ALL, { empty: 1, appid: 559650 }).then(servers => {
   console.log(servers);
@@ -170,7 +170,7 @@ Response (shortened):
 #### A2S_INFO
 To retrieve information about the game server with the address `176.57.181.178:27003`:
 ```javascript
-import { queryGameServerInfo } from 'steam-server-query';
+import { queryGameServerInfo } from 'steam-server-query-goldsrc-support';
 
 queryGameServerInfo('176.57.181.178:27003').then(infoResponse => {
   console.log(infoResponse);
@@ -203,7 +203,7 @@ Response:
 #### A2S_PLAYER
 To retrieve players playing on the game server with the address `176.57.181.178:27003`:
 ```javascript
-import { queryGameServerPlayer } from 'steam-server-query';
+import { queryGameServerPlayer } from 'steam-server-query-goldsrc-support';
 
 queryGameServerPlayer('176.57.181.178:27003').then(playerResponse => {
   console.log(playerResponse);
@@ -240,7 +240,7 @@ Response (shortened):
 #### A2S_RULES
 To retrieve rules of the game server with the address `176.57.181.178:27003`:
 ```javascript
-import { queryGameServerRules } from 'steam-server-query';
+import { queryGameServerRules } from 'steam-server-query-goldsrc-support';
 
 queryGameServerRules('176.57.181.178:27003').then(rulesResponse => {
   console.log(rulesResponse);
@@ -278,4 +278,4 @@ Response:
 - [Game Server Queries](https://developer.valvesoftware.com/wiki/Server_queries)
 
 ## License
-This repository and the code inside it is licensed under the MIT License. Read [LICENSE](https://github.com/GiyoMoon/steam-server-query/blob/main/LICENSE) for more information.
+This repository and the code inside it is licensed under the MIT License. Read [LICENSE](https://github.com/LAxBANDA/steam-server-query-goldsrc-support/blob/main/LICENSE) for more information.

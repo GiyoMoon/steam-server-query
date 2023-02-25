@@ -1,6 +1,6 @@
 {
-  "name": "steam-server-query",
-  "version": "1.1.3",
+  "name": "steam-server-query-goldsrc-support",
+  "version": "1.1.4",
   "description": "Module which implements the Master Server Query Protocol and Game Server Queries.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,19 +12,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GiyoMoon/steam-server-query.git"
+    "url": "git+https://github.com/LAxBANDA/steam-server-query-goldsrc-support.git"
   },
   "keywords": [
     "steam",
     "master server query",
     "game server query"
   ],
-  "author": "GiyoMoon",
+  "author": "LAxBANDA",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/GiyoMoon/steam-server-query/issues"
+    "url": "https://github.com/LAxBANDA/steam-server-query-goldsrc-support/issues"
   },
-  "homepage": "https://github.com/GiyoMoon/steam-server-query#readme",
+  "homepage": "https://github.com/LAxBANDA/steam-server-query-goldsrc-support#readme",
   "devDependencies": {
     "@types/node": "^17.0.17",
     "typescript": "^4.5.5"
