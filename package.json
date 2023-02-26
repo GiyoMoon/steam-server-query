@@ -1,6 +1,6 @@
 {
   "name": "steam-server-query-goldsrc-support",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Module which implements the Master Server Query Protocol and Game Server Queries.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

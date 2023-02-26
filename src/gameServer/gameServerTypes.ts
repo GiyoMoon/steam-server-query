@@ -20,7 +20,7 @@ export interface InfoResponse {
   spectatorPort?: number;
   spectatorName?: string;
   keywords?: string;
-  gameId?: BigInt;
+  gameId?: number;
 }
 
 export interface PlayerResponse {

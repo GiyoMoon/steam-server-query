@@ -271,7 +271,7 @@ class GameServerQuery {
         [infoResponse.keywords, buffer] = this._readString(buffer);
       }
       if (edf & 0x01) {
-        infoResponse.gameId = buffer.readBigInt64LE();
+        infoResponse.gameId = buffer.readInt32LE();
         buffer = buffer.slice(8);
       }
     }
